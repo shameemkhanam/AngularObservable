@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
-import { map,filter } from 'rxjs/operators';
+import { from, Observable, of, interval } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
+import { DataService } from './data.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  providers: [DataService],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'AngularObservables';
+  constructor(private dataservice: DataService) {}
 
   //  USING CONSTRUCTOR METHOD:
   // myObservable = new Observable((observer) => {
@@ -36,12 +39,12 @@ export class AppComponent implements OnInit {
   //   setTimeout(() => { observer.complete() }, 4000);
   // });
 
-  array1 = [1, 2, 6,7,8];
-  array2 = ['A', 'B', 'C'];
+  // array1 = [1, 2, 6,7,8];
+  // array2 = ['A', 'B', 'C'];
 
   //'OF' OPERATOR
   // myObservable = of(this.array1, this.array2, 20, 30, "hello");
-  
+
   //'FROM' OPERATOR
   // myObservable = from(this.array1); //1,2,3,4,5
 
@@ -58,25 +61,36 @@ export class AppComponent implements OnInit {
   // }));
 
   //simplied version of above:
-  myObservable = from(this.array1).pipe(map((val) => {
-    return val * 5;
-  }), filter((val) => {
-    return val >= 30;
-  }));
+  // myObservable = from(this.array1).pipe(map((val) => {
+  //   return val * 5;
+  // }), filter((val) => {
+  //   return val >= 30;
+  // }));
 
-
+  counterObs = interval(1000); //it'll go on printing nos from 0 after every sec untill we unsubscribe it
+  counterSub: any;
   ngOnInit() {
-    this.myObservable.subscribe(
-      (val: any) => {
-        console.log(val);
-      },
-      (error: { message: any }) => {
-        alert(error.message);
-      },
-      () => {
-        alert('completed emitting');
-      }
-    );
+    // this.myObservable.subscribe(
+    //   (val: any) => {
+    //     console.log(val);
+    //   },
+    //   (error: { message: any }) => {
+    //     alert(error.message);
+    //   },
+    //   () => {
+    //     alert('completed emitting');
+    //   }
+    // );
   }
 
+  unsubscribe() {
+    this.counterSub.unsubscribe();
+  }
+
+  subscribe() {
+    this.counterSub = this.counterObs.subscribe((val) => {
+      //subscribe will also return an observable
+      console.log(val);
+    });
+  }
 }
